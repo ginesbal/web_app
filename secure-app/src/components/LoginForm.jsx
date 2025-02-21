@@ -1,68 +1,47 @@
-import { useState } from "react";
+// src/components/LoginForm.jsx
+import React from 'react';
 
-const LoginForm = ({ setToken }) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-
-        if (!username.trim() || !password.trim()) {
-            setError("Both fields are required.");
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const response = await fetch("http://localhost:3333/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.uuid) {
-                setToken(data.uuid); // Store token in parent state
-            } else {
-                setError(data.message || "Invalid username or password.");
-            }
-        } catch (error) {
-            setError("Network error. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
+function LoginForm({
+    username,
+    password,
+    setUsername,
+    setPassword,
+    handleLogin,
+    errorMessage
+}) {
     return (
-        <div className="login-container">
-            <h2>Login</h2>
-            {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: '10px' }}>
+                <label htmlFor="username">Email</label>
                 <input
-                    type="text"
-                    placeholder="Username"
+                    id="username"
+                    type="email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    style={{ display: 'block', width: '100%', marginTop: '5px' }}
                     required
                 />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+                <label htmlFor="password">Password</label>
                 <input
+                    id="password"
                     type="password"
-                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    style={{ display: 'block', width: '100%', marginTop: '5px' }}
                     required
                 />
-                <button type="submit" disabled={loading}>
-                    {loading ? "Logging in..." : "Login"}
-                </button>
-            </form>
-        </div>
+            </div>
+
+            {errorMessage && (
+                <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>
+            )}
+
+            <button type="submit">Login</button>
+        </form>
     );
-};
+}
 
 export default LoginForm;
